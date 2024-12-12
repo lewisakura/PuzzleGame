@@ -1,5 +1,6 @@
 ﻿namespace PuzzleGame;
 
+// exists because i need an integer based vector for the grid, and monogame's float-based one is annoying to work with
 public struct Vector2Int
 {
     public int X { get; set; }

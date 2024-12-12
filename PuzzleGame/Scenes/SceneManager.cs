@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -8,19 +9,29 @@ namespace PuzzleGame.Scenes;
 
 public static class SceneManager
 {
-    private static Dictionary<Type, Scene> _scenes = new()
+    private static readonly Dictionary<Type, Scene> _scenes = new()
     {
-        { typeof(PuzzleScene), new PuzzleScene() }
+        { typeof(MenuScene), new MenuScene() },
+        { typeof(PuzzleScene), new PuzzleScene() },
+        { typeof(VoidScene), new VoidScene() }
     };
     
-    private static Scene _activeScene = _scenes[typeof(PuzzleScene)];
+    private static Scene _activeScene = _scenes[typeof(MenuScene)];
     
     public static void SwitchScene<T>()
         where T : Scene
     {
         _activeScene.Cleanup();
 
-        _activeScene = _scenes[typeof(T)];
+        if (!_scenes.ContainsKey(typeof(T)))
+        {
+            _activeScene = _scenes[typeof(VoidScene)];
+        }
+        else
+        {
+            _activeScene = _scenes[typeof(T)];
+        }
+        
         _activeScene.Init();
     }
 
@@ -40,6 +51,11 @@ public static class SceneManager
     public static void Draw(GameTime gameTime, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
     {
         _activeScene.Draw(gameTime, graphicsDevice, spriteBatch);
+    }
+    
+    public static void DrawUI(GameTime gameTime, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
+    {
+        _activeScene.DrawUI(gameTime, graphicsDevice, spriteBatch);
     }
 
     public static void Update(GameTime gameTime)

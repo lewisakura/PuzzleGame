@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace PuzzleGame.Scenes;
 
+/// <summary>
+/// The primary game.
+/// </summary>
 public class PuzzleScene() : Scene("Puzzle")
 {
     private const int Size = PuzzleGame.Size;
@@ -206,13 +209,9 @@ public class PuzzleScene() : Scene("Puzzle")
     {
         graphicsDevice.Clear(Color.Black);
 
-        spriteBatch.Begin();
-
         for (var x = 0; x < Size; x++)
         for (var y = 0; y < Size; y++)
             DrawTile(spriteBatch, x, y);
-
-        spriteBatch.End();
         
         base.Draw(gameTime, graphicsDevice, spriteBatch);
     }
