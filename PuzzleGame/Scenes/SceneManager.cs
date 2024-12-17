@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -9,28 +8,26 @@ namespace PuzzleGame.Scenes;
 
 public static class SceneManager
 {
-    private static readonly Dictionary<Type, Scene> _scenes = new()
+    private static readonly Dictionary<Type, Scene> Scenes = new()
     {
         { typeof(MenuScene), new MenuScene() },
         { typeof(PuzzleScene), new PuzzleScene() },
         { typeof(VoidScene), new VoidScene() }
     };
     
-    private static Scene _activeScene = _scenes[typeof(MenuScene)];
+    private static Scene _activeScene = Scenes[typeof(MenuScene)];
     
     public static void SwitchScene<T>()
         where T : Scene
     {
         _activeScene.Cleanup();
-
-        if (!_scenes.ContainsKey(typeof(T)))
+        
+        _activeScene = !Scenes.ContainsKey(typeof(T)) ? Scenes[typeof(VoidScene)] : Scenes[typeof(T)];
+        if (_activeScene is VoidScene)
         {
-            _activeScene = _scenes[typeof(VoidScene)];
+            Console.WriteLine($"Unable to find {typeof(T).Name} in scenes list, is it not defined?");
         }
-        else
-        {
-            _activeScene = _scenes[typeof(T)];
-        }
+        Console.WriteLine($"Switching to scene {_activeScene.Name}");
         
         _activeScene.Init();
     }
@@ -42,7 +39,7 @@ public static class SceneManager
     
     public static void LoadContent(ContentManager content)
     {
-        foreach (var scene in _scenes.Values)
+        foreach (var scene in Scenes.Values)
         {
             scene.LoadContent(content);
         }

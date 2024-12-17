@@ -5,7 +5,7 @@ namespace PuzzleGame;
 
 public class BinaryHeapPriorityQueue<T>
 {
-    private readonly List<(T Item, int Priority)> _heap = new();
+    private readonly List<(T Item, int Priority)> _heap = [];
 
     public int Count => _heap.Count;
 
@@ -19,7 +19,7 @@ public class BinaryHeapPriorityQueue<T>
     {
         if (_heap.Count == 0) throw new InvalidOperationException("The queue is empty.");
 
-        T item = _heap[0].Item;
+        var item = _heap[0].Item;
         _heap[0] = _heap[^1];
         _heap.RemoveAt(_heap.Count - 1);
 
@@ -38,7 +38,7 @@ public class BinaryHeapPriorityQueue<T>
 
     public void UpdatePriority(T item, int newPriority)
     {
-        for (int i = 0; i < _heap.Count; i++)
+        for (var i = 0; i < _heap.Count; i++)
         {
             if (EqualityComparer<T>.Default.Equals(_heap[i].Item, item))
             {
@@ -56,7 +56,7 @@ public class BinaryHeapPriorityQueue<T>
     {
         while (index > 0)
         {
-            int parentIndex = (index - 1) / 2;
+            var parentIndex = (index - 1) / 2;
             if (_heap[index].Priority >= _heap[parentIndex].Priority) break;
 
             Swap(index, parentIndex);
@@ -66,13 +66,13 @@ public class BinaryHeapPriorityQueue<T>
 
     private void BubbleDown(int index)
     {
-        int lastIndex = _heap.Count - 1;
+        var lastIndex = _heap.Count - 1;
 
         while (true)
         {
-            int leftChild = 2 * index + 1;
-            int rightChild = 2 * index + 2;
-            int smallest = index;
+            var leftChild = 2 * index + 1;
+            var rightChild = 2 * index + 2;
+            var smallest = index;
 
             if (leftChild <= lastIndex && _heap[leftChild].Priority < _heap[smallest].Priority)
             {
@@ -93,8 +93,6 @@ public class BinaryHeapPriorityQueue<T>
 
     private void Swap(int index1, int index2)
     {
-        var temp = _heap[index1];
-        _heap[index1] = _heap[index2];
-        _heap[index2] = temp;
+        (_heap[index1], _heap[index2]) = (_heap[index2], _heap[index1]);
     }
 }

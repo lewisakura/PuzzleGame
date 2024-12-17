@@ -24,11 +24,11 @@ public class PuzzleScene() : Scene("Puzzle")
 
     private SpriteFont _tileOverlayFont;
 
-    public int[,] CompletionState { get; private set; } = new int[Size, Size];
+    public int[,] CompletionState { get; } = new int[Size, Size];
     
-    private IEnumerator<int[,]> _steppedSolver = null;
+    private IEnumerator<int[,]> _steppedSolver;
 
-    private bool _showHints = false;
+    private bool _showHints;
     
     public override void Init()
     {
@@ -55,11 +55,6 @@ public class PuzzleScene() : Scene("Puzzle")
         _tileTexture = content.Load<Texture2D>("TextureBase");
         
         base.LoadContent(content);
-    }
-
-    public override void Cleanup()
-    {
-        base.Cleanup();
     }
 
     public override void Update(GameTime gameTime)
@@ -346,7 +341,7 @@ public class PuzzleScene() : Scene("Puzzle")
     public static bool IsSolvable(int[,] state)
     {
         var flatBoard = state.Cast<int>().ToArray();
-        int inversions = CountInversions(flatBoard);
+        var inversions = CountInversions(flatBoard);
 
         if (Size % 2 == 1)
         {
@@ -354,17 +349,17 @@ public class PuzzleScene() : Scene("Puzzle")
         }
         else
         {
-            int blankRow = FindBlankRowFromBottom(state);
+            var blankRow = FindBlankRowFromBottom(state);
             return (blankRow % 2 == 0) == (inversions % 2 == 1);
         }
     }
 
     private static int CountInversions(int[] flatBoard)
     {
-        int inversions = 0;
-        for (int i = 0; i < flatBoard.Length; i++)
+        var inversions = 0;
+        for (var i = 0; i < flatBoard.Length; i++)
         {
-            for (int j = i + 1; j < flatBoard.Length; j++)
+            for (var j = i + 1; j < flatBoard.Length; j++)
             {
                 if (flatBoard[i] > flatBoard[j] && flatBoard[i] != 0 && flatBoard[j] != 0)
                 {
@@ -377,9 +372,9 @@ public class PuzzleScene() : Scene("Puzzle")
 
     private static int FindBlankRowFromBottom(int[,] state)
     {
-        for (int row = Size - 1; row >= 0; row--)
+        for (var row = Size - 1; row >= 0; row--)
         {
-            for (int col = 0; col < Size; col++)
+            for (var col = 0; col < Size; col++)
             {
                 if (state[row, col] == 0)
                 {

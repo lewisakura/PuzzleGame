@@ -14,7 +14,7 @@ public class Solver
     // Main entry point: returns a stack of puzzle states at each step
     public static Stack<int[,]> Solve(int[,] input)
     {
-        Stack<int[,]> stateStack = new Stack<int[,]>();
+        var stateStack = new Stack<int[,]>();
         state = (int[,])input.Clone();
         (blankX, blankY) = FindBlankSpace(state);
 
@@ -22,19 +22,19 @@ public class Solver
         SaveState(stateStack);
 
         // Step 1: Solve the top row
-        for (int target = 1; target <= Size; target++)
+        for (var target = 1; target <= Size; target++)
         {
             PlaceTile(target, stateStack);
         }
 
         // Step 2: Solve the second row
-        for (int target = Size + 1; target <= Size * 2; target++)
+        for (var target = Size + 1; target <= Size * 2; target++)
         {
             PlaceTile(target, stateStack);
         }
 
         // Step 3: Solve the third row except the last two tiles
-        for (int target = Size * 2 + 1; target <= Size * 3 - 1; target++)
+        for (var target = Size * 2 + 1; target <= Size * 3 - 1; target++)
         {
             PlaceTile(target, stateStack);
         }
@@ -50,7 +50,7 @@ public class Solver
 
     private static void PlaceTile(int target, Stack<int[,]> stateStack)
     {
-        (int targetX, int targetY) = FindTargetPosition(target);
+        (var targetX, var targetY) = FindTargetPosition(target);
 
         while (state[targetX, targetY] != target)
         {
@@ -60,11 +60,11 @@ public class Solver
 
     private static void MoveTileToTarget(int target, int targetX, int targetY, Stack<int[,]> stateStack)
     {
-        (int currentX, int currentY) = FindTilePosition(target);
+        (var currentX, var currentY) = FindTilePosition(target);
 
         while (currentX != targetX || currentY != targetY)
         {
-            Direction dir = GetNextMoveDirection(currentX, currentY, targetX, targetY);
+            var dir = GetNextMoveDirection(currentX, currentY, targetX, targetY);
             (blankX, blankY) = UpdateBlankSpace(dir);
             Swap(state, currentX, currentY, blankX, blankY);
             SaveState(stateStack); // Save state after each move
@@ -92,8 +92,8 @@ public class Solver
 
     private static (int, int) FindBlankSpace(int[,] state)
     {
-        for (int i = 0; i < state.GetLength(0); i++)
-        for (int j = 0; j < state.GetLength(1); j++)
+        for (var i = 0; i < state.GetLength(0); i++)
+        for (var j = 0; j < state.GetLength(1); j++)
             if (state[i, j] == 0)
                 return (i, j);
         throw new Exception("Blank space not found");
@@ -101,8 +101,8 @@ public class Solver
 
     private static (int, int) FindTilePosition(int tile)
     {
-        for (int i = 0; i < state.GetLength(0); i++)
-        for (int j = 0; j < state.GetLength(1); j++)
+        for (var i = 0; i < state.GetLength(0); i++)
+        for (var j = 0; j < state.GetLength(1); j++)
             if (state[i, j] == tile)
                 return (i, j);
         throw new Exception("Tile not found");
@@ -110,8 +110,8 @@ public class Solver
 
     private static (int, int) FindTargetPosition(int tile)
     {
-        int targetX = (tile - 1) / Size;
-        int targetY = (tile - 1) % Size;
+        var targetX = (tile - 1) / Size;
+        var targetY = (tile - 1) % Size;
 
         if (tile == 0)
             return (Size - 1, Size - 1);
@@ -133,14 +133,14 @@ public class Solver
 
     private static void Swap(int[,] array, int x1, int y1, int x2, int y2)
     {
-        int temp = array[x1, y1];
+        var temp = array[x1, y1];
         array[x1, y1] = array[x2, y2];
         array[x2, y2] = temp;
     }
 
     private static void SaveState(Stack<int[,]> stateStack)
     {
-        int[,] snapshot = (int[,])state.Clone();
+        var snapshot = (int[,])state.Clone();
         stateStack.Push(snapshot);
     }
 }

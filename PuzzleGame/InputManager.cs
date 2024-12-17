@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace PuzzleGame;
 
-public class InputManager
+public static class InputManager
 {
     private static MouseState _currentMouseState;
     private static MouseState _lastMouseState;

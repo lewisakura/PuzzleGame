@@ -16,6 +16,7 @@ public abstract class Scene(string name)
     public virtual void Cleanup() {}
     public virtual void LoadContent(ContentManager content) {}
     
+    // ReSharper disable once UnusedParameter.Global // API consistency
     public virtual void Draw(GameTime gameTime, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch) {}
 
     public virtual void Update(GameTime gameTime)
