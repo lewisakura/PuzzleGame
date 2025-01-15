@@ -1,16 +1,27 @@
-﻿namespace PuzzleGame;
+﻿using System;
+
+namespace PuzzleGame;
 
 // exists because i need an integer based vector for the grid, and monogame's float-based one is annoying to work with
-public struct Vector2Int
+public struct Vector2Int(int x, int y) : IEquatable<Vector2Int>
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-
-    public Vector2Int(int x, int y)
+    public bool Equals(Vector2Int other)
     {
-        X = x;
-        Y = y;
+        return X == other.X && Y == other.Y;
     }
+
+    public override bool Equals(object obj)
+    {
+        return obj is Vector2Int other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y);
+    }
+
+    public int X { get; set; } = x;
+    public int Y { get; set; } = y;
 
     public static bool operator ==(Vector2Int a, Vector2Int b)
     {

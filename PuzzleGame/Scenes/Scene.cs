@@ -8,9 +8,9 @@ namespace PuzzleGame.Scenes;
 
 public abstract class Scene(string name)
 {
-    public string Name { get; init; } = name;
+    public string Name { get; } = name;
 
-    private List<Component> _uiComponents = [];
+    private readonly List<Component> _uiComponents = [];
 
     public virtual void Init() {}
     public virtual void Cleanup() {}

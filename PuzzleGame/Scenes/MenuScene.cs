@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using PuzzleGame.UI;
 
@@ -19,26 +18,10 @@ public class MenuScene() : Scene("Menu")
             Console.WriteLine("click :D");
             SceneManager.SwitchScene<PuzzleScene>();
         }));
-        AddUIComponent(new Button(new Rectangle(PuzzleGame.Resolution / 2 + 5, PuzzleGame.Resolution / 2, PuzzleGame.Resolution / 4 - 5, 50), "Quit",
+        AddUIComponent(new Button(new Rectangle(PuzzleGame.Resolution / 4, PuzzleGame.Resolution / 2, PuzzleGame.Resolution / 2, 50), "Quit",
             () =>
             {
                 Environment.Exit(0);
-            }));
-        
-        AddUIComponent(new Button(new Rectangle(PuzzleGame.Resolution / 4, PuzzleGame.Resolution / 2, PuzzleGame.Resolution / 4 - 5, 50), "Opts.",
-            () =>
-            {
-                PuzzleGame.QueueAction(() =>
-                {
-                    var text = AddUIComponent(new Text(new Point(PuzzleGame.Resolution / 2, PuzzleGame.Resolution - 50),
-                        "Not implemented"));
-                    
-                    Task.Run(async () =>
-                    {
-                        await Task.Delay(1000);
-                        PuzzleGame.QueueAction(() => RemoveUIComponent(text));
-                    });
-                });
             }));
     }
 }

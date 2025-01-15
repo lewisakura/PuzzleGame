@@ -50,3 +50,9 @@
 /processorParam:TextureFormat=Compressed
 /build:TileOverlay.spritefont
 
+#begin WinnerWinner.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:WinnerWinner.mp3
+

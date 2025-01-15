@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PuzzleGame.UI;
 
 namespace PuzzleGame.Scenes;
 
@@ -27,11 +28,24 @@ public class PuzzleScene() : Scene("Puzzle")
 
     private SoundEffect _tileSoundEffect;
 
-    public int[,] CompletionState { get; } = new int[Size, Size];
+    private int[,] CompletionState { get; } = new int[Size, Size];
     
     private IEnumerator<int[,]> _steppedSolver;
 
     private bool _showHints;
+
+    private Text _moveText;
+
+    private int _moves;
+    private int Moves
+    {
+        get => _moves;
+        set
+        {
+            _moveText.UpdateText(value.ToString());
+            _moves = value;
+        }
+    }
     
     public override void Init()
     {
@@ -48,6 +62,23 @@ public class PuzzleScene() : Scene("Puzzle")
         {
             ShuffleArray(_gameBoard);
         } while (!IsSolvable(_gameBoard));
+
+        AddUIComponent(new Button(new Rectangle(10, PuzzleGame.Resolution + 64, PuzzleGame.Resolution / 2 - 20, 50), "Shuffle [R]",
+            () =>
+            {
+                do
+                {
+                    ShuffleArray(_gameBoard);
+                } while (!IsSolvable(_gameBoard));
+            }));
+        
+        AddUIComponent(new Button(new Rectangle(PuzzleGame.Resolution / 2, PuzzleGame.Resolution + 64, PuzzleGame.Resolution / 2 - 10, 50), "Numbers [LShift]",
+            () =>
+            {
+                _showHints = !_showHints;
+            }));
+
+        _moveText = AddUIComponent(new Text(new Point(PuzzleGame.Resolution / 2, PuzzleGame.Resolution + 32), "0"));
         
         base.Init();
     }
@@ -67,24 +98,16 @@ public class PuzzleScene() : Scene("Puzzle")
         {
             var location = InputManager.GetMousePosition();
             
-            // work out which tile was clicked based on the input position
-            
-            // out of bounds on the border
-            if (location.X < TilePadding || location.Y < TilePadding || location.X >= TileSize * Size ||
-                location.Y >= TileSize * Size) return;
-            
             // find the tile that was clicked
             for (var x = 0; x < Size; x++)
             for (var y = 0; y < Size; y++)
             {
-                var collisionRect = new Rectangle((x * (TileSize + TilePadding)) + TilePadding,
-                    (y * (TileSize + TilePadding)) + TilePadding, TileSize, TileSize);
+                var collisionRect = new Rectangle(x * (TileSize + TilePadding) + TilePadding,
+                    y * (TileSize + TilePadding) + TilePadding, TileSize, TileSize);
 
-                if (collisionRect.Contains(location) && _gameBoard[x, y] != 0)
-                {
-                    _selectedTile = new Vector2Int { X = x, Y = y };
-                    break;
-                }
+                if (!collisionRect.Contains(location) || _gameBoard[x, y] == 0) continue;
+                _selectedTile = new Vector2Int { X = x, Y = y };
+                break;
             }
         }
 
@@ -97,18 +120,33 @@ public class PuzzleScene() : Scene("Puzzle")
                     if (_gameBoard[x, y] == 0)
                         blank = new Vector2Int { X = x, Y = y };
 
-            var collisionRect = new Rectangle((blank.X * (TileSize + TilePadding)) + TilePadding,
-                (blank.Y * (TileSize + TilePadding)) + TilePadding, TileSize, TileSize);
+            var collisionRect = new Rectangle(blank.X * (TileSize + TilePadding) + TilePadding,
+                blank.Y * (TileSize + TilePadding) + TilePadding, TileSize, TileSize);
 
             if (InputManager.MouseHoveringRect(collisionRect))
             {
                 var direction = blank - _selectedTile;
-                
-                if (direction.X == -1) MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Left);
-                if (direction.X == 1) MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Right);
-                if (direction.Y == -1) MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Up);
-                if (direction.Y == 1) MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Down);
-                
+
+                switch (direction.X)
+                {
+                    case -1:
+                        MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Left);
+                        break;
+                    case 1:
+                        MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Right);
+                        break;
+                }
+
+                switch (direction.Y)
+                {
+                    case -1:
+                        MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Up);
+                        break;
+                    case 1:
+                        MoveTile(_selectedTile.X, _selectedTile.Y, Direction.Down);
+                        break;
+                }
+
                 Console.WriteLine(direction);
             }
         }
@@ -160,18 +198,6 @@ public class PuzzleScene() : Scene("Puzzle")
                 ShuffleArray(_gameBoard);
             } while (!IsSolvable(_gameBoard));
         }
-
-        if (InputManager.IsKeyJustPressed(Keys.Space))
-        {
-            foreach (var i in _gameBoard)
-            {
-                Console.Write("{0} ", i);
-            }
-            Console.WriteLine();
-            var instructions = Solver.Solve(_gameBoard);
-            Console.WriteLine(string.Join(", ", instructions));
-            _steppedSolver = instructions.GetEnumerator();
-        }
         
         if (InputManager.IsKeyJustPressed(Keys.LeftShift))
         {
@@ -215,7 +241,7 @@ public class PuzzleScene() : Scene("Puzzle")
         base.Draw(gameTime, graphicsDevice, spriteBatch);
     }
     
-    private void ShuffleArray<T>(T[,] values)
+    private static void ShuffleArray<T>(T[,] values)
     {
         var rows = values.GetUpperBound(0) + 1;
         var cols = values.GetUpperBound(1) + 1;
@@ -248,7 +274,7 @@ public class PuzzleScene() : Scene("Puzzle")
         
         spriteBatch.Draw(
             _tileTexture,
-            new Vector2((x * (TileSize + TilePadding)) + TilePadding, (y * (TileSize + TilePadding)) + TilePadding),
+            new Vector2(x * (TileSize + TilePadding) + TilePadding, y * (TileSize + TilePadding) + TilePadding),
             new Rectangle(texX, texY, TileSize, TileSize),
             _selectedTile == new Vector2Int { X = x, Y = y } ? Color.Aquamarine : Color.White);
 
@@ -258,8 +284,8 @@ public class PuzzleScene() : Scene("Puzzle")
                 _tileOverlayFont,
                 text,
                 new Vector2(
-                    (x * (TileSize + TilePadding)) + TilePadding + (TileSize / 2) - (textSize.X / 2),
-                    (y * (TileSize + TilePadding)) + TilePadding + (TileSize / 2) - (textSize.Y / 2)),
+                    x * (TileSize + TilePadding) + TilePadding + TileSize / 2 - textSize.X / 2,
+                    y * (TileSize + TilePadding) + TilePadding + TileSize / 2 - textSize.Y / 2),
                 Color.White);
         }
     }
@@ -342,9 +368,10 @@ public class PuzzleScene() : Scene("Puzzle")
         }
 
         _tileSoundEffect.Play();
+        Moves++;
     }
-    
-    public static bool IsSolvable(int[,] state)
+
+    private static bool IsSolvable(int[,] state)
     {
         var flatBoard = state.Cast<int>().ToArray();
         var inversions = CountInversions(flatBoard);
@@ -356,7 +383,7 @@ public class PuzzleScene() : Scene("Puzzle")
         else
         {
             var blankRow = FindBlankRowFromBottom(state);
-            return (blankRow % 2 == 0) == (inversions % 2 == 1);
+            return blankRow % 2 == 0 == (inversions % 2 == 1);
         }
     }
 

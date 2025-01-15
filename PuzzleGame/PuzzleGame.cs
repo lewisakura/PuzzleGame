@@ -4,21 +4,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using PuzzleGame.Scenes;
 
 namespace PuzzleGame;
 
 public class PuzzleGame : Game
 {
-    private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+
+    private Song _song;
     
     public const int Size = 4;
 
     public const int TileSize = 96;
     public const int TilePadding = 6;
 
-    public const int Resolution = (TileSize * Size) + (TilePadding * (Size + 1));
+    public const int Resolution = TileSize * Size + TilePadding * (Size + 1);
 
     public static ContentManager ContentManager { get; private set; }
 
@@ -26,14 +28,14 @@ public class PuzzleGame : Game
 
     public PuzzleGame()
     {
-        _graphics = new GraphicsDeviceManager(this);
+        var graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         
         _queuedActions = new Queue<Action>();
 
-        _graphics.PreferredBackBufferWidth = (TileSize * Size) + (TilePadding * (Size + 1));
-        _graphics.PreferredBackBufferHeight = (TileSize * Size) + (TilePadding * (Size + 1));
+        graphics.PreferredBackBufferWidth = Resolution;
+        graphics.PreferredBackBufferHeight = Resolution + 128;
     }
 
     /// <summary>
@@ -60,6 +62,12 @@ public class PuzzleGame : Game
         ContentManager = Content;
 
         SceneManager.LoadContent(Content);
+
+        _song = Content.Load<Song>("WinnerWinner");
+        
+        MediaPlayer.Volume = 0.25f;
+        MediaPlayer.IsRepeating = true;
+        MediaPlayer.Play(_song);
     }
 
     protected override void Update(GameTime gameTime)
