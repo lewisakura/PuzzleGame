@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace PuzzleGame.UI;
@@ -8,11 +9,22 @@ public class Button(Rectangle rect, string text, Action callback) : Component
 {
     private static Texture2D _buttonTexture;
     private static SpriteFont _buttonFont;
+    private static SoundEffect _buttonHover;
+    private static SoundEffect _buttonClick;
 
     public override void Update(GameTime gameTime)
     {
+        if (InputManager.MouseJustHoveredRect(rect))
+        {
+            _buttonHover ??= PuzzleGame.ContentManager.Load<SoundEffect>("MenuHover");
+            _buttonHover.Play();
+        }
+        
         if (InputManager.MouseClickedRect(rect))
         {
+            _buttonClick ??= PuzzleGame.ContentManager.Load<SoundEffect>("MenuSelect");
+            
+            _buttonClick.Play();
             callback.Invoke();
         }
         

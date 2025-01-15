@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,6 +24,8 @@ public class PuzzleScene() : Scene("Puzzle")
     private Vector2Int _selectedTile = new() { X = 0, Y = 0 };
 
     private SpriteFont _tileOverlayFont;
+
+    private SoundEffect _tileSoundEffect;
 
     public int[,] CompletionState { get; } = new int[Size, Size];
     
@@ -53,6 +56,7 @@ public class PuzzleScene() : Scene("Puzzle")
     {
         _tileOverlayFont = content.Load<SpriteFont>("TileOverlay");
         _tileTexture = content.Load<Texture2D>("TextureBase");
+        _tileSoundEffect = content.Load<SoundEffect>("TileSoundEffect");
         
         base.LoadContent(content);
     }
@@ -336,6 +340,8 @@ public class PuzzleScene() : Scene("Puzzle")
                 _selectedTile.X++;
                 break;
         }
+
+        _tileSoundEffect.Play();
     }
     
     public static bool IsSolvable(int[,] state)

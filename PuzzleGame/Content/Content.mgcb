@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin click3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:click3.wav;TileSoundEffect.wav
+
 #begin hasselblad-x2d-100c-earth-explorer-limited-edition-body-508-shop-26391-384x384.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -24,6 +30,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:hasselblad-x2d-100c-earth-explorer-limited-edition-body-508-shop-26391-384x384.png;TextureBase.png
+
+#begin MenuHover.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:MenuHover.mp3
+
+#begin MenuSelect.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:MenuSelect.mp3
 
 #begin TileOverlay.spritefont
 /importer:FontDescriptionImporter
